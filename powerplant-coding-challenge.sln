@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.IntegrationTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain.csproj", "{131585DA-5A95-4F30-B05A-4ABCD2CE3AA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketClient", "src\WebSocketClient\WebSocketClient.csproj", "{6BC3D850-FA56-4125-9CBE-535FF93602F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSocketClient", "src\WebSocketClient\WebSocketClient.csproj", "{6BC3D850-FA56-4125-9CBE-535FF93602F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "test\Application.UnitTests\Application.UnitTests.csproj", "{D95221F4-96B9-47C5-95DF-7D719AC51B64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{6BC3D850-FA56-4125-9CBE-535FF93602F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BC3D850-FA56-4125-9CBE-535FF93602F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BC3D850-FA56-4125-9CBE-535FF93602F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D95221F4-96B9-47C5-95DF-7D719AC51B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D95221F4-96B9-47C5-95DF-7D719AC51B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D95221F4-96B9-47C5-95DF-7D719AC51B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D95221F4-96B9-47C5-95DF-7D719AC51B64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

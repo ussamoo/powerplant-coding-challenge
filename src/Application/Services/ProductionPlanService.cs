@@ -18,17 +18,23 @@ namespace Application.Services
             // edge cases:
 
             // => load cannot be fulfilled :
-            // i choose to return return a message (bad request) to the caller to in form him that the load cannot be fulfilled
+            // i choose to return a message (bad request) to the caller to inform him that the load cannot be fulfilled
             // we could also raise an event to be consumed by a process for farther actions, but here i let the caller decide what to do
             var productionPlanCapacity = powerPlantWithCosts.Sum(x => x.PowerMax);
             if (productionPlanCapacity < load)
             {
-                throw new ProductionPlanException($"The expected load cannot be fulfilled!! remaining load to produce:  {load - productionPlanCapacity}");
+                // The exception will be handled by the global error filter, a bad request will be returned
+                throw new ProductionPlanException($"The expected load cannot be fulfilled, remaining load to produce:  {load - productionPlanCapacity}");
             }
 
             // 2 => Over production:
             // for example when the load is less than the smallest pmin
-            // TODO handle this case
+            var minimumProduction = powerPlantWithCosts.Where(x => x.CanProduce).Min(x => x.PowerMin);
+            if (load < minimumProduction)
+            {
+                // The exception will be handled by the global error filter, a bad request will be returned
+                throw new ProductionPlanException($"Over production detected, the extra production amount is: {minimumProduction - load}");
+            }
 
             // merit-order
             var powerPlantsInMeritOrder = powerPlantWithCosts
@@ -94,11 +100,9 @@ namespace Application.Services
                 }
                 else
                 {
-                    productionPlan.Add(new ProductionPlanItem
-                    {
-                        Name = powerPlant.Name,
-                        Power = 0
-                    });
+                    // Over production 
+                    // The exception will be handled by the global error filter, a bad request will be returned
+                    throw new ProductionPlanException($"Over production detected, the extra production amount is: {powerPlant.PowerMin - expectedLoad - balanceAmount}");
                 }
 
             }
