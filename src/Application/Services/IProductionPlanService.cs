@@ -15,7 +15,7 @@ namespace Application.Services
         /// <param name="fuels"><see cref="Fuel"/></param>
         /// <param name="load">Expected load</param>
         /// <returns>A list of <see cref="ProductionPlan"/></returns>
-        List<Domain.ProductionPlanItem> Calculate(IEnumerable<PowerPlant> powerPlants, Fuel fuels, double load);
+        List<Domain.ProductionPlanItem> Calculate(List<PowerPlant> powerPlants, Fuel fuels, double load);
 
     }
 }

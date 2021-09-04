@@ -9,7 +9,7 @@ namespace Application.Services
     public class ProductionPlanService : IProductionPlanService
     {
 
-        public List<ProductionPlanItem> Calculate(IEnumerable<PowerPlant> powerPlants, Fuel fuels, double load)
+        public List<ProductionPlanItem> Calculate(List<PowerPlant> powerPlants, Fuel fuels, double load)
         {
             // Get the list of powerplants with cost, PowerMin and PowerMax calculated.
             var powerPlantWithCosts = powerPlants.Select(x => new PowerPlantDecorator(x, fuels))
@@ -100,15 +100,54 @@ namespace Application.Services
                 }
                 else
                 {
-                    // Over production 
-                    // The exception will be handled by the global error filter, a bad request will be returned
-                    throw new ProductionPlanException($"Over production detected, the extra production amount is: {powerPlant.PowerMin - expectedLoad - balanceAmount}");
+                    // Check if we can fulfill the load by taking a combination of minimum production
+                    var balancedProduction = TryBalanceAtMinimumProduction(powerPlantWithCosts, load);
+                    if (balancedProduction.Count > 0)
+                    {
+                        // reset production plan
+                        productionPlan.Clear();
+                        var firstCombination = balancedProduction.First();
+
+                        foreach (var plant in powerPlantWithCosts)
+                        {
+                            var p = firstCombination.FirstOrDefault(x => x.Name == plant.Name);
+                            if (p is not null)
+                            {
+                                productionPlan.Add(new ProductionPlanItem()
+                                {
+                                    Power = p.PowerMin,
+                                    PowerMin = p.PowerMin,
+                                    Name =  p.Name,
+                                    CanBeBalanced = false
+                                });
+                            }
+                            else
+                            {
+                                productionPlan.Add(new ProductionPlanItem
+                                {
+                                    Name = plant.Name,
+                                    Power = 0
+                                });
+                            }
+                        }
+
+                        expectedLoad = 0;
+
+                    }
+                    else
+                    {
+                        // The exception will be handled by the global error filter, a bad request will be returned
+                        throw new ProductionPlanException($"Over production detected, the extra production amount is: {minimumProduction - load}");
+
+                    }
+
                 }
 
             }
 
             return productionPlan;
         }
+
 
         private static void BalanceProductionPlan(List<ProductionPlanItem> productionPlan, double balanceAmount)
         {
@@ -126,6 +165,36 @@ namespace Application.Services
                     plan.Power = Math.Round(plan.Power - balance);
                     toBalance -= balance;
                 }
+            }
+        }
+
+        private static List<List<PowerPlantDecorator>> TryBalanceAtMinimumProduction(List<PowerPlantDecorator> powerPlants, double load)
+        {
+            List<List<PowerPlantDecorator>> value = new ();
+            BalanceAtMinimumProduction(powerPlants, load, new(), ref value);
+            return value;
+        }
+
+        private static void BalanceAtMinimumProduction(List<PowerPlantDecorator> powerPlants, double load, List<PowerPlantDecorator> partial, ref List<List<PowerPlantDecorator>> result)
+        {
+            double s = 0;
+            foreach (var x in partial.Select(x=> x.PowerMin).ToList()) s += x;
+            if (Math.Abs(s - load) < 0.001)
+            {
+                result.Add(partial);
+            }
+
+            if (s >= load)
+                return;
+
+            for (var i = 0; i < powerPlants.Count; i++)
+            {
+                var remaining = new List<PowerPlantDecorator>();
+                var powerPlant = powerPlants[i];
+                for (var j = i + 1; j < powerPlants.Count; j++) remaining.Add(powerPlants[j]);
+
+                List<PowerPlantDecorator> partialRec = new (partial) { powerPlant };
+                BalanceAtMinimumProduction(remaining, load, partialRec, ref result);
             }
         }
     }

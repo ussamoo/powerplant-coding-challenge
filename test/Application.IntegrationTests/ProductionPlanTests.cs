@@ -24,7 +24,7 @@ namespace Application.IntegrationTests
         }
 
         [Test]
-        public async Task ShouldReturnsListWithPowersEqualToProvidedLoadSample1()
+        public async Task ShouldReturnsTheProductionPlanWithTheExpectedLoadForSample1()
         {
             // Arrange
             var command = new ProductionPlanCommand()
@@ -101,7 +101,7 @@ namespace Application.IntegrationTests
 
 
         [Test]
-        public async Task ShouldReturnsListWithPowersEqualToProvidedLoadSample3()
+        public async Task ShouldReturnsTheProductionPlanWithTheExpectedLoadForSample2()
         {
             // Arrange
             var command = new ProductionPlanCommand()

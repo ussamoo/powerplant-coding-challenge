@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Services;
@@ -28,7 +29,7 @@ namespace Application.ProductionPlan.Commands
 
         public async Task<List<ProductionPlanItem>> Handle(ProductionPlanCommand request, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => _productionPlanService.Calculate(request.PowerPlants,request.Fuels, request.Load), cancellationToken);
+            return await Task.Run(() => _productionPlanService.Calculate(request.PowerPlants.ToList(),request.Fuels, request.Load), cancellationToken);
 
         }
 
